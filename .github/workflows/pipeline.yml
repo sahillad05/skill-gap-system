@@ -1,0 +1,47 @@
+name: Skill Gap Pipeline
+
+on:
+  schedule:
+    - cron: "0 4 * * *"  # Runs daily at 9:30 AM IST
+  workflow_dispatch:
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+
+    env:
+      ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+      ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
+      YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Job Ingestion
+        run: python src/ingestion/adzuna_jobs.py
+
+      - name: Run YouTube Ingestion
+        run: python src/ingestion/youtube_data.py
+
+      - name: Clean Data
+        run: python src/processing/clean_data.py
+
+      - name: Skill Extraction
+        run: python src/processing/skill_extraction.py
+
+      - name: Insert into DB
+        run: python src/database/insert_data.py
+
+      - name: Run Analytics
+        run: python src/analytics/skill_gap.py
