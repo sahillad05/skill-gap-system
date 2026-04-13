@@ -10,6 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
+      PYTHONPATH: .
       ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
       ADZUNA_APP_KEY: ${{ secrets.ADZUNA_APP_KEY }}
       YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
@@ -44,4 +45,4 @@ jobs:
         run: python src/database/insert_data.py
 
       - name: Run Analytics
-        run: python src/analytics/skill_gap.py
+        run: python -m src.analytics.skill_gap
