@@ -379,7 +379,7 @@ def _color_gap(v):
 
 styled = (
     display_df.style
-    .applymap(_color_gap, subset=["Gap Score"])
+    .map(_color_gap, subset=["Gap Score"])
     .background_gradient(subset=["Demand"], cmap="Blues")
     .background_gradient(subset=["Supply"], cmap="YlOrBr")
     .format({"Demand": "{:,}", "Supply": "{:,}", "Gap Score": "{:.1f}"})
