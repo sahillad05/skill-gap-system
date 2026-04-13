@@ -1,0 +1,44 @@
+[
+    {
+        "skill": "excel",
+        "demand": 2,
+        "supply": 0,
+        "gap": 1.2
+    },
+    {
+        "skill": "data analysis",
+        "demand": 3,
+        "supply": 2,
+        "gap": 1.0
+    },
+    {
+        "skill": "tableau",
+        "demand": 1,
+        "supply": 0,
+        "gap": 0.6
+    },
+    {
+        "skill": "sql",
+        "demand": 3,
+        "supply": 10,
+        "gap": -2.2
+    },
+    {
+        "skill": "python",
+        "demand": 2,
+        "supply": 11,
+        "gap": -3.2
+    },
+    {
+        "skill": "machine learning",
+        "demand": 1,
+        "supply": 10,
+        "gap": -3.4
+    },
+    {
+        "skill": "power bi",
+        "demand": 1,
+        "supply": 10,
+        "gap": -3.4
+    }
+]
