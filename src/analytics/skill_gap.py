@@ -1,5 +1,5 @@
 from sqlalchemy.orm import sessionmaker
-from database.db import engine
+from src.database.db import engine
 from src.database.models import Job, YouTube
 from collections import Counter
 
