@@ -3,6 +3,7 @@ import json
 import pandas as pd
 import plotly.graph_objects as go
 from datetime import datetime
+from src.database.db import engine
 
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -123,25 +124,54 @@ def base_layout(**overrides):
 @st.cache_data(ttl=300)
 def load_data():
     try:
-        with open("data/skill_gap_results.json") as f:
-            return pd.DataFrame(json.load(f))
-    except FileNotFoundError:
-        return pd.DataFrame([
-            {"skill": "Python",           "demand": 320, "supply": 180},
-            {"skill": "SQL",              "demand": 290, "supply": 200},
-            {"skill": "Machine Learning", "demand": 250, "supply": 110},
-            {"skill": "Power BI",         "demand": 210, "supply": 90},
-            {"skill": "Tableau",          "demand": 190, "supply": 140},
-            {"skill": "Deep Learning",    "demand": 160, "supply": 80},
-            {"skill": "NLP",              "demand": 140, "supply": 60},
-            {"skill": "Docker",           "demand": 130, "supply": 95},
-            {"skill": "Spark",            "demand": 110, "supply": 50},
-            {"skill": "Airflow",          "demand": 100, "supply": 40},
-            {"skill": "Excel",            "demand": 170, "supply": 300},
-            {"skill": "Kubernetes",       "demand": 95,  "supply": 70},
-        ])
+        # Skill metrics (existing charts)
+        metrics_query = """
+        SELECT skill, demand_count AS demand, supply_count AS supply, weighted_gap_score AS gap
+        FROM skill_metrics
+        """
 
-df = load_data()
+        # Jobs table (for filters)
+        jobs_query = """
+        SELECT title, location
+        FROM jobs
+        """
+
+        df_metrics = pd.read_sql(metrics_query, engine)
+        df_jobs = pd.read_sql(jobs_query, engine)
+
+        return df_metrics, df_jobs
+
+    except Exception:
+        # fallback (your existing dummy data)
+        df_metrics = pd.DataFrame([
+            {"skill": "Python", "demand": 320, "supply": 180},
+            {"skill": "SQL", "demand": 290, "supply": 200},
+        ])
+        df_jobs = pd.DataFrame([
+            {"title": "Data Analyst", "location": "Mumbai"},
+            {"title": "Data Scientist", "location": "Pune"},
+        ])
+        return df_metrics, df_jobs
+
+df, jobs_df = load_data()
+
+def extract_role(title):
+    if not title:
+        return "Other"
+    title = title.lower()
+
+    if "data analyst" in title:
+        return "Data Analyst"
+    elif "data scientist" in title:
+        return "Data Scientist"
+    elif "engineer" in title:
+        return "Data Engineer"
+    else:
+        return "Other"
+
+jobs_df["role"] = jobs_df["title"].apply(extract_role)
+
+
 if "gap" not in df.columns:
     df["gap"] = (df["demand"] * 0.6) - (df["supply"] * 0.4)
 df["gap"] = df["gap"].round(1)
@@ -157,6 +187,16 @@ with st.sidebar:
     st.caption(f"Last refresh  \n{datetime.now().strftime('%d %b %Y  %H:%M')}")
     st.caption("**Gap formula**  \n`(Demand × 0.6) − (Supply × 0.4)`")
 
+    st.markdown("### Advanced Filters")
+
+    # Location filter
+    locations = sorted(jobs_df["location"].dropna().unique())
+    selected_location = st.selectbox("Location", ["All"] + list(locations))
+
+    # Role filter
+    roles = sorted(jobs_df["role"].unique())
+    selected_role = st.selectbox("Role", ["All"] + roles)
+
 
 # ── Filter ────────────────────────────────────────────────────────────────────
 sort_col = {"Gap Score": "gap", "Demand": "demand", "Supply": "supply"}[sort_by]
@@ -165,12 +205,21 @@ if not show_negative:
     df_sorted = df_sorted[df_sorted["gap"] >= 0]
 df_top = df_sorted.head(top_n).reset_index(drop=True)
 
+# Apply filters on jobs (context only)
+filtered_jobs = jobs_df.copy()
+
+if selected_location != "All":
+    filtered_jobs = filtered_jobs[filtered_jobs["location"] == selected_location]
+
+if selected_role != "All":
+    filtered_jobs = filtered_jobs[filtered_jobs["role"] == selected_role]
+
 
 # ── Header ────────────────────────────────────────────────────────────────────
 st.markdown("## Skill Gap Intelligence")
 st.caption("Job market demand vs. learning supply · updated weekly")
 st.divider()
-
+st.caption(f"Filters → Location: {selected_location} | Role: {selected_role}")
 
 # ── KPI row ───────────────────────────────────────────────────────────────────
 k1, k2, k3, k4 = st.columns(4)
