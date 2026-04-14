@@ -1,81 +1,82 @@
 # 🚀 Real-Time Skill Gap Intelligence System
 
+## 🌐 Live Demo
+
+👉 https://your-render-app.onrender.com
+
+---
+
 ## 📌 Overview
 
-The **Real-Time Skill Gap Intelligence System** is a production-ready data analytics platform that analyzes the gap between **job market demand** and **learning supply** to identify the most valuable skills to learn.
+The **Real-Time Skill Gap Intelligence System** is an end-to-end data product that identifies the gap between **job market demand** and **learning supply**, helping users discover the most valuable skills to learn.
 
-It integrates real-time job postings and learning content, processes unstructured text using NLP techniques, and presents insights through an interactive dashboard.
+This system integrates real-time APIs, processes unstructured data, performs dynamic analytics, and visualizes insights through an interactive dashboard.
 
 ---
 
 ## 🎯 Problem Statement
 
-Learners often struggle to identify:
+In today’s fast-changing job market, learners struggle to answer:
 
-* Which skills are currently in demand
-* Which skills are oversaturated
-* What to learn next for maximum career growth
+* Which skills are currently in demand?
+* Which skills are oversaturated?
+* What should I learn next?
 
 ---
 
 ## 💡 Solution
 
-This system answers:
+This system provides:
 
-* 📊 Which skills are most demanded in the job market?
-* 📉 Which skills are oversaturated?
-* 🚀 Which skills have the highest opportunity (skill gap)?
-
-Using:
-
-* Job data (Adzuna API)
-* Learning data (YouTube API)
-* Analytics engine (Demand vs Supply)
+* 📊 Demand analysis from job postings
+* 📉 Supply analysis from learning content
+* 🚀 Skill gap scoring to identify high-opportunity skills
 
 ---
 
 ## 🏗️ System Architecture
 
-```
-          ┌──────────────┐
-          │ Adzuna API   │
-          └──────┬───────┘
-                 │
-          ┌──────▼───────┐
-          │ Data Ingestion│
-          └──────┬───────┘
-                 │
-          ┌──────▼────────┐
-          │ Data Cleaning │
-          └──────┬────────┘
-                 │
-          ┌──────▼────────┐
-          │ Skill Extraction│
-          └──────┬────────┘
-                 │
-          ┌──────▼────────┐
-          │ Supabase DB   │
-          └──────┬────────┘
-                 │
-          ┌──────▼────────┐
-          │ Analytics Engine│
-          └──────┬────────┘
-                 │
-          ┌──────▼────────┐
-          │ Streamlit UI  │
-          └───────────────┘
-```
+┌──────────────┐     ┌────────────────┐
+│  Adzuna API  │     │  YouTube API   │
+└──────┬───────┘     └───────┬────────┘
+       │                     │
+       └────────┬────────────┘
+                ▼
+       ┌────────────────┐
+       │ Data Ingestion │
+       └───────┬────────┘
+               ▼
+       ┌────────────────┐
+       │ Data Cleaning  │
+       └───────┬────────┘
+               ▼
+       ┌──────────────────┐
+       │ Skill Extraction │  ← NLP / Dictionary Matching
+       └───────┬──────────┘
+               ▼
+       ┌────────────────┐
+       │  Supabase DB   │  ← PostgreSQL
+       └───────┬────────┘
+               ▼
+       ┌──────────────────┐
+       │ Analytics Engine │  ← Gap Score Calculation
+       └───────┬──────────┘
+               ▼
+       ┌────────────────┐
+       │  Streamlit UI  │  ← Interactive Dashboard
+       └────────────────┘
 
 ---
 
 ## ⚙️ Tech Stack
 
-* **Languages**: Python
-* **Libraries**: Pandas, NumPy, SQLAlchemy, Streamlit, Plotly
-* **APIs**: Adzuna API, YouTube Data API
-* **Database**: Supabase (PostgreSQL)
-* **Automation**: GitHub Actions (CI/CD pipeline)
-* **Deployment**: Render
+* **Language:** Python
+* **Backend:** SQLAlchemy
+* **Frontend:** Streamlit, Plotly
+* **Database:** Supabase (PostgreSQL)
+* **APIs:** Adzuna API, YouTube Data API
+* **Automation:** GitHub Actions (CI/CD)
+* **Deployment:** Render
 
 ---
 
@@ -84,57 +85,71 @@ Using:
 ### 🟢 Job Data
 
 * Source: Adzuna API
-* Fields: Title, Description, Location, Salary
+* Fields: Title, Location, Salary, Description
 
 ### 🔵 Learning Data
 
-* Source: YouTube Data API
+* Source: YouTube API
 * Fields: Title, Description
 
 ---
 
 ## 🧠 Core Features
 
-### 🔹 1. Skill Extraction (NLP)
+### 🔹 Skill Extraction
 
-* Dictionary-based skill matching
-* Converts raw text → structured skill lists
-
-### 🔹 2. Demand Calculation
-
-* Counts skill occurrences in job postings
-
-### 🔹 3. Supply Calculation
-
-* Counts skill occurrences in learning content
-
-### 🔹 4. Skill Gap Score
-
-```
-Weighted Gap = (Demand × 0.6) − (Supply × 0.4)
-```
-
-* High score → High opportunity
-* Low/negative → Saturated skill
+* NLP-based keyword matching
+* Converts raw text → structured skill list
 
 ---
 
-## 📊 Dashboard Features
+### 🔹 Demand vs Supply Analysis
 
-* 📌 Skill Gap Leaderboard
-* 📊 Demand vs Supply Comparison
-* 📉 Gap Score Visualization
-* 🧭 Quadrant Analysis (Demand vs Supply)
+* Demand = Frequency in job postings
+* Supply = Frequency in tutorials
+
+---
+
+### 🔹 Skill Gap Formula
+
+```
+Gap Score = (Demand × 0.6) − (Supply × 0.4)
+```
+
+---
+
+### 🔹 Dynamic Filtering (🔥 Advanced Feature)
+
+* Filter by **Location**
+* Filter by **Role (Data Analyst, ML Engineer, etc.)**
+* Real-time recomputation of metrics
+
+---
+
+### 🔹 Time-Series Analysis
+
+* Tracks job trends over time
+* Uses timestamped job data
+* Visualized using line charts
+
+---
+
+### 🔹 Interactive Dashboard
+
+* 📊 KPI Metrics
+* 🔥 Gap Leaderboard
+* 📈 Demand vs Supply Chart
+* 🎯 Quadrant Analysis
 * 📡 Radar Comparison
-* 📋 Interactive Data Table
+* 📅 Time-Series Trends
+* 📋 Styled Data Table
 
 ---
 
 ## ⚡ Automation
 
-* Daily pipeline execution using **GitHub Actions**
-* Fetch → Process → Store → Analyze → Update dashboard
-* Runs independently of local system
+* Daily pipeline using **GitHub Actions**
+* Fetch → Process → Store → Analyze → Update
 
 ---
 
@@ -144,10 +159,10 @@ Weighted Gap = (Demand × 0.6) − (Supply × 0.4)
 
 * id
 * title
-* description
 * location
 * salary
 * skills
+* created_at
 
 ### Table: youtube
 
@@ -167,20 +182,21 @@ Weighted Gap = (Demand × 0.6) − (Supply × 0.4)
 
 ## 🚀 Deployment
 
-* **Dashboard**: Render
-* **Database**: Supabase
-* **Automation**: GitHub Actions
+| Component  | Platform       |
+| ---------- | -------------- |
+| Dashboard  | Render         |
+| Database   | Supabase       |
+| Automation | GitHub Actions |
 
 ---
 
-## ▶️ How to Run Locally
+## ▶️ Run Locally
 
 ```bash
-# Clone repo
 git clone https://github.com/sahillad05/skill-gap-system.git
 cd skill-gap-system
 
-# Create environment
+# Create virtual environment
 python -m venv venv
 venv\Scripts\activate   # Windows
 
@@ -189,21 +205,14 @@ pip install -r requirements.txt
 
 # Run pipeline
 python -m src.ingestion.adzuna_jobs
-python -m src.ingestion.youtube_data
 python -m src.processing.clean_data
 python -m src.processing.skill_extraction
 python -m src.database.insert_data
 python -m src.analytics.skill_gap
 
 # Run dashboard
-streamlit run src/dashboard/app.py
+python -m streamlit run src/dashboard/app.py
 ```
-
----
-
-## 🌐 Live Demo
-
-👉 [https://skill-gap-system.onrender.com]
 
 ---
 
@@ -211,19 +220,21 @@ streamlit run src/dashboard/app.py
 
 * End-to-end data pipeline design
 * API integration and data ingestion
-* NLP-based feature extraction
+* Dynamic analytics with real-time filtering
 * Cloud database (Supabase) integration
-* CI/CD automation with GitHub Actions
-* Dashboard development with Streamlit
+* CI/CD automation using GitHub Actions
+* Dashboard design and UI optimization
 
 ---
 
+
 ## 🔮 Future Improvements
 
-* Add time-series trend analysis
-* Improve skill extraction using ML/NLP models
-* Add user personalization (role-based recommendations)
-* Integrate more job platforms (LinkedIn, Indeed)
+* Add ML-based skill extraction
+* Integrate LinkedIn / Indeed APIs
+* Add user personalization
+* Real-time streaming pipeline (Kafka)
+* Recommendation engine
 
 ---
 
