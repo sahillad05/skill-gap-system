@@ -1,15 +1,17 @@
 import json
-from db import engine
-from models import Job, YouTube
+from src.database.db import engine
+from src.database.models import Job, YouTube
 from sqlalchemy.orm import sessionmaker
 
 Session = sessionmaker(bind=engine)
 session = Session()
 
-
 # -------- INSERT JOBS --------
 with open("data/jobs_with_skills.json", "r") as f:
     jobs = json.load(f)
+
+from datetime import datetime, timedelta
+import random
 
 for job in jobs:
     new_job = Job(
@@ -17,7 +19,8 @@ for job in jobs:
         description=job["description"],
         location=job["location"],
         salary=job["salary"],
-        skills=",".join(job["skills"])
+        skills=",".join(job["skills"]),  # ✅ comma added
+        created_at=datetime.utcnow() - timedelta(days=random.randint(0, 10))
     )
     session.add(new_job)
 

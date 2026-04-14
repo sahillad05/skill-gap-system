@@ -5,6 +5,7 @@ import plotly.graph_objects as go
 from datetime import datetime
 from src.database.db import engine
 
+
 # ── Page config ───────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="Skill Gap Intelligence",
@@ -124,15 +125,13 @@ def base_layout(**overrides):
 @st.cache_data(ttl=300)
 def load_data():
     try:
-        # Skill metrics (existing charts)
         metrics_query = """
         SELECT skill, demand_count AS demand, supply_count AS supply, weighted_gap_score AS gap
         FROM skill_metrics
         """
 
-        # Jobs table (for filters)
         jobs_query = """
-        SELECT title, location
+        SELECT title, location, skills, created_at
         FROM jobs
         """
 
@@ -141,16 +140,13 @@ def load_data():
 
         return df_metrics, df_jobs
 
-    except Exception:
-        # fallback (your existing dummy data)
-        df_metrics = pd.DataFrame([
-            {"skill": "Python", "demand": 320, "supply": 180},
-            {"skill": "SQL", "demand": 290, "supply": 200},
-        ])
-        df_jobs = pd.DataFrame([
-            {"title": "Data Analyst", "location": "Mumbai"},
-            {"title": "Data Scientist", "location": "Pune"},
-        ])
+    except Exception as e:
+        st.error(f"DB Error: {e}")
+
+        with open("data/skill_gap_results.json") as f:
+            df_metrics = pd.DataFrame(json.load(f))
+
+        df_jobs = pd.DataFrame()
         return df_metrics, df_jobs
 
 df, jobs_df = load_data()
@@ -158,18 +154,59 @@ df, jobs_df = load_data()
 def extract_role(title):
     if not title:
         return "Other"
+
     title = title.lower()
 
-    if "data analyst" in title:
+    if "analyst" in title:
         return "Data Analyst"
-    elif "data scientist" in title:
+    elif "scientist" in title:
         return "Data Scientist"
+    elif "machine learning" in title or "ml" in title:
+        return "ML Engineer"
     elif "engineer" in title:
         return "Data Engineer"
     else:
         return "Other"
 
-jobs_df["role"] = jobs_df["title"].apply(extract_role)
+if not jobs_df.empty and "title" in jobs_df.columns:
+    jobs_df["role"] = jobs_df["title"].apply(extract_role)
+else:
+    jobs_df["role"] = "Other"
+
+
+from collections import Counter
+
+def compute_dynamic_metrics(jobs_df):
+    from collections import Counter
+
+    all_skills = []
+
+    for skills in jobs_df["skills"].dropna():
+        all_skills.extend([
+            s.strip().lower()
+            for s in skills.split(",")
+            if s.strip() != ""
+        ])
+
+    demand_counter = Counter(all_skills)
+
+    data = []
+    for skill, count in demand_counter.items():
+        data.append({
+            "skill": skill,
+            "demand": count,
+            "supply": 0,
+        })
+
+    # 🔥 HANDLE EMPTY CASE
+    if not data:
+        return pd.DataFrame(columns=["skill", "demand", "supply", "gap"])
+
+    df_dynamic = pd.DataFrame(data)
+
+    df_dynamic["gap"] = (df_dynamic["demand"] * 0.6)
+
+    return df_dynamic
 
 
 if "gap" not in df.columns:
@@ -190,29 +227,54 @@ with st.sidebar:
     st.markdown("### Advanced Filters")
 
     # Location filter
-    locations = sorted(jobs_df["location"].dropna().unique())
-    selected_location = st.selectbox("Location", ["All"] + list(locations))
+    if not jobs_df.empty and "location" in jobs_df.columns:
+        locations = sorted(jobs_df["location"].dropna().unique())
+    else:
+        locations = []
+
+    selected_location = st.selectbox("Location", ["All"] + locations)
 
     # Role filter
-    roles = sorted(jobs_df["role"].unique())
+    if not jobs_df.empty and "role" in jobs_df.columns:
+        roles = sorted(jobs_df["role"].dropna().unique())
+    else:
+        roles = []
+
     selected_role = st.selectbox("Role", ["All"] + roles)
 
 
-# ── Filter ────────────────────────────────────────────────────────────────────
+
+# ── Filter (SAFE VERSION) ────────────────────────────────────────────────────
+
+if not jobs_df.empty:
+
+    filtered_jobs = jobs_df.copy()
+
+    if selected_location != "All" and "location" in filtered_jobs.columns:
+        filtered_jobs = filtered_jobs[filtered_jobs["location"] == selected_location]
+
+    if selected_role != "All" and "role" in filtered_jobs.columns:
+        filtered_jobs = filtered_jobs[filtered_jobs["role"] == selected_role]
+
+    if not filtered_jobs.empty and "skills" in filtered_jobs.columns:
+        df = compute_dynamic_metrics(filtered_jobs)
+
+else:
+    filtered_jobs = pd.DataFrame()
+
+
+
+# ── CREATE df_top (MANDATORY FIX) ──
+
 sort_col = {"Gap Score": "gap", "Demand": "demand", "Supply": "supply"}[sort_by]
+
 df_sorted = df.sort_values(sort_col, ascending=False)
+
 if not show_negative:
     df_sorted = df_sorted[df_sorted["gap"] >= 0]
+
 df_top = df_sorted.head(top_n).reset_index(drop=True)
 
-# Apply filters on jobs (context only)
-filtered_jobs = jobs_df.copy()
-
-if selected_location != "All":
-    filtered_jobs = filtered_jobs[filtered_jobs["location"] == selected_location]
-
-if selected_role != "All":
-    filtered_jobs = filtered_jobs[filtered_jobs["role"] == selected_role]
 
 
 # ── Header ────────────────────────────────────────────────────────────────────
@@ -223,14 +285,43 @@ st.caption(f"Filters → Location: {selected_location} | Role: {selected_role}")
 
 # ── KPI row ───────────────────────────────────────────────────────────────────
 k1, k2, k3, k4 = st.columns(4)
-top_skill_row = df.sort_values("gap", ascending=False).iloc[0]
-k1.metric("Skills Tracked",    str(len(df)))
-k2.metric("Total Job Signals", f"{df['demand'].sum():,}")
-k3.metric("Total Tutorials",   f"{df['supply'].sum():,}")
-k4.metric("Hottest Skill",     top_skill_row["skill"],
-          f"gap score {top_skill_row['gap']:.0f}")
 
-st.markdown("<br>", unsafe_allow_html=True)
+k1.metric("Skills Tracked", len(df))
+k2.metric("Total Job Signals", int(df["demand"].sum()) if not df.empty else 0)
+k3.metric("Total Tutorials", int(df["supply"].sum()) if "supply" in df else 0)
+
+if not df.empty:
+    top_skill_row = df.sort_values("gap", ascending=False).iloc[0]
+    k4.metric("Hottest Skill", top_skill_row["skill"], f"gap score {top_skill_row['gap']:.0f}")
+else:
+    k4.metric("Hottest Skill", "N/A")
+
+
+st.markdown('<p class="section-header">Trend Over Time</p>', unsafe_allow_html=True)
+
+
+# ── Time-series trend (SAFE VERSION) ─────────────────────────────────────────
+
+if not filtered_jobs.empty and "created_at" in filtered_jobs.columns:
+
+    filtered_jobs["created_at"] = pd.to_datetime(filtered_jobs["created_at"], errors="coerce")
+    filtered_jobs = filtered_jobs.dropna(subset=["created_at"])
+
+    # 🔥 group by day properly
+    trend = (
+        filtered_jobs
+        .set_index("created_at")
+        .resample("D")
+        .size()
+    )
+
+    if len(trend) > 1:
+        st.line_chart(trend)
+    else:
+        st.warning("Not enough time variation in data")
+
+else:
+    st.info("No time-series data available")
 
 
 # ── Row 1: Leaderboard + Grouped bar ─────────────────────────────────────────
@@ -249,7 +340,7 @@ with col_lb:
           <span class="lb-rank">#{i+1:02d}</span>
           <span class="lb-skill">{row['skill']}</span>
           <span class="lb-pill {pill_cls}">{pill_lbl}</span>
-          <span class="lb-score" style="color:{sc}">{g}</span>
+          <span class="lb-score" style="color:{sc}">{g:.1f}</span>
         </div>"""
     html += "</div>"
     st.markdown(html, unsafe_allow_html=True)
@@ -420,19 +511,27 @@ display_df = (
                      "supply": "Supply", "gap": "Gap Score"})
 )
 
-def _color_gap(v):
-    if v >= 80: return f"color: {C_RED};   font-weight: 600"
-    if v >= 40: return f"color: {C_GREEN};  font-weight: 600"
-    if v >= 0:  return f"color: {C_AMBER}; font-weight: 500"
-    return "color: #64748b"
+def highlight_gap(val):
+    if val >= 3:
+        return "color: #ef4444; font-weight: 600;"  # red
+    elif val >= 1:
+        return "color: #f59e0b; font-weight: 500;"  # amber
+    else:
+        return "color: #94a3b8;"  # neutral
+
 
 styled = (
     display_df.style
-    .map(_color_gap, subset=["Gap Score"])
-    .background_gradient(subset=["Demand"], cmap="Blues")
-    .background_gradient(subset=["Supply"], cmap="YlOrBr")
-    .format({"Demand": "{:,}", "Supply": "{:,}", "Gap Score": "{:.1f}"})
+    .map(highlight_gap, subset=["Gap Score"])
+    .format({
+        "Demand": "{:,}",
+        "Supply": "{:,}",
+        "Gap Score": "{:.1f}"
+    })
 )
+
+
+
 st.dataframe(styled, use_container_width=True, height=360)
 
 
@@ -443,3 +542,6 @@ st.caption(
     "Data: Adzuna API + YouTube Data API  ·  "
     "Built with Streamlit & Plotly"
 )
+
+
+

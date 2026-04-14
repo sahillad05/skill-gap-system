@@ -1,44 +1,50 @@
 [
     {
         "skill": "excel",
+        "demand": 6,
+        "supply": 3,
+        "gap": 2.4
+    },
+    {
+        "skill": "tableau",
         "demand": 2,
         "supply": 0,
         "gap": 1.2
     },
     {
-        "skill": "data analysis",
-        "demand": 3,
-        "supply": 2,
-        "gap": 1.0
+        "skill": "deep learning",
+        "demand": 0,
+        "supply": 1,
+        "gap": -0.4
     },
     {
-        "skill": "tableau",
-        "demand": 1,
-        "supply": 0,
-        "gap": 0.6
+        "skill": "data analysis",
+        "demand": 4,
+        "supply": 19,
+        "gap": -5.2
     },
     {
         "skill": "sql",
-        "demand": 3,
-        "supply": 10,
-        "gap": -2.2
-    },
-    {
-        "skill": "python",
-        "demand": 2,
-        "supply": 11,
-        "gap": -3.2
+        "demand": 4,
+        "supply": 80,
+        "gap": -29.6
     },
     {
         "skill": "machine learning",
-        "demand": 1,
-        "supply": 10,
-        "gap": -3.4
+        "demand": 4,
+        "supply": 83,
+        "gap": -30.8
     },
     {
         "skill": "power bi",
-        "demand": 1,
-        "supply": 10,
-        "gap": -3.4
+        "demand": 2,
+        "supply": 80,
+        "gap": -30.8
+    },
+    {
+        "skill": "python",
+        "demand": 4,
+        "supply": 91,
+        "gap": -34.0
     }
 ]

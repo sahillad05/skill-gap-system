@@ -1,6 +1,15 @@
 [
     {
         "title": "data analyst",
+        "description": "position data analyst experience years location ahmedabad job summary detailoriented data analyst with experience in data management reporting and operational support skilled in handling large datasets maintaining data accuracy and generating actionable insights to support business decisions proficient in excelbased analysis mis reporting and working with crm and internal systems key responsibilities collect clean and manage data from multiple sources to ensure accuracy and",
+        "location": "Ahmedabad, Gujarat",
+        "salary": null,
+        "skills": [
+            "excel"
+        ]
+    },
+    {
+        "title": "data analyst",
         "description": "job title data analyst experience years location hyderabad employment type fulltime were seeking an android developer to join our stellar app development teamsomeone passionate about their career and looking for an exciting and challenging work environment job summary we are looking for a detailoriented data analyst with at least years of experience who has strong analytical thinking and handson coding experience the ideal candidate will be responsible for collecting analyzing",
         "location": "Hyderabad, Telangana",
         "salary": null,
@@ -40,15 +49,22 @@
     },
     {
         "title": "data analyst",
+        "description": "about neuranxai neuranxai is an aifirst startup building intelligent platforms in cloud optimization devops automation and enterprise ai solutions we focus on realworld scalable products where engineers have strong ownership high impact and exposure to modern technologies about the role we are looking for a detailoriented and analytical data analyst with years of experience in data analytics azure data factory pipelines and data modeling key responsibilities design develop a",
+        "location": "Chennai, Tamil Nadu",
+        "salary": null,
+        "skills": []
+    },
+    {
+        "title": "data analyst",
         "description": "data analyst work experience to years domain product fintech mandatory technical skill set previous experience in product based company is mandatory ml model development experience is a plus python statistical analysis and ab testing excel sql visualisation tools such as redash grafana tableau power bi bitbucket githubs and versioning tools roles and responsibilities to work on product integrations data collection and sanity checks of the data improving product features f",
         "location": "Bangalore, Karnataka",
         "salary": null,
         "skills": [
-            "sql",
-            "excel",
             "python",
             "tableau",
-            "power bi"
+            "excel",
+            "power bi",
+            "sql"
         ]
     },
     {
@@ -60,11 +76,11 @@
     },
     {
         "title": "data analyst",
-        "description": "role data engineer analyst experience years domain exposure in banking domain is required location gurgaon noida hyderabad pune bangalore work mode hybrid summary we are seeking a highly skilled data analyst data engineer with strong expertise in sql and handson experience in pyspark and big data environments the ideal candidate will have us banking domain experience and the ability to work directly with clients to deliver datadriven insights and solutions roles and responsib",
+        "description": "job title data analyst location india remote employment type fulltime about daice labs daice labs is an ai research and product company founded by mit csail scientists headquartered in brookline ma the company develops hybrid ai systems that integrate neurosymbolic methods with machine learning to build auditable adaptive and governable ai daice labs operates two integrated divisions a research lab focused on hybrid ai architectures and cofabric a governed ai execution platform f",
         "location": "India",
         "salary": null,
         "skills": [
-            "sql"
+            "machine learning"
         ]
     },
     {
@@ -127,16 +143,7 @@
     },
     {
         "title": "data analyst",
-        "description": "we are seeking a detailoriented and analytical data analyst with strong experience in the ecommerce domain the role requires analyzing customer behavior sales performance and operational metrics to generate actionable insights that drive business growth the ideal candidate should be proficient in data analysis reporting and visualization while working closely with business marketing and product teams key responsibilities analyze large datasets related to sales customers orders t",
-        "location": "Bangalore, Karnataka",
-        "salary": null,
-        "skills": [
-            "data analysis"
-        ]
-    },
-    {
-        "title": "data analyst",
-        "description": "about company droisys is an innovation technology company focused on helping companies accelerate their digital initiatives from strategy and planning through execution we leverage deep technical expertise agile methodologies and datadriven intelligence to modernize systems of engagement and simplify humantech interaction amazing things happen when we work in environments where everyone feels a true sense of belonging and when candidates have the requisite skills and opportunities to succ",
+        "description": "about fini fini is a yc and matrixbacked ai platform that automates up to of support tickets with accuracy we process over million tickets monthly for fintech saas and marketplace companies including fortune s and the us chamber of commerce soc gdpr and iso compliant about the role were looking for a data analyst who can turn messy data into clear decisions this is a fulltime remote role where youll work across teams to surface insights that directly shape how",
         "location": "India",
         "salary": null,
         "skills": []
@@ -147,16 +154,9 @@
         "location": "Mumbai, Maharashtra",
         "salary": null,
         "skills": [
-            "sql",
             "excel",
+            "sql",
             "python"
         ]
-    },
-    {
-        "title": "data analyst",
-        "description": "role overview the lead data analyst will be responsible for driving dataled decisionmaking across key business functions including sales marketing supply chain and operations this role will focus on building advanced analytical models and scalable data systems to improve business performance across areas such as sales elasticity promotions effectiveness demand forecasting production planning and customer lifecycle management the incumbent will play a critical role in transforming d",
-        "location": "Mumbai, Maharashtra",
-        "salary": null,
-        "skills": []
     }
 ]

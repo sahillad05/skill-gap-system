@@ -2,6 +2,7 @@ from sqlalchemy.orm import sessionmaker
 from src.database.db import engine
 from src.database.models import Job, YouTube
 from collections import Counter
+from src.database.models import SkillMetrics
 
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -47,7 +48,7 @@ for skill in all_skills:
         "skill": skill,
         "demand": demand,
         "supply": supply,
-        "gap": round(gap, 2)
+        "gap": round(float(gap), 2)
     })
 
 
@@ -68,3 +69,22 @@ with open("data/skill_gap_results.json", "w") as f:
     json.dump(results, f, indent=4)
 
 print("✅ Results saved!")
+
+
+# -------- SAVE TO DATABASE (VERY IMPORTANT) --------
+
+# Clear old data
+session.query(SkillMetrics).delete()
+
+for r in results:
+    record = SkillMetrics(
+        skill=r["skill"],
+        demand_count=r["demand"],
+        supply_count=r["supply"],
+        weighted_gap_score=r["gap"]
+    )
+    session.add(record)
+
+session.commit()
+
+print("✅ Skill metrics stored in database!")
